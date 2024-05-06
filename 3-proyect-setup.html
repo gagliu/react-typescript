@@ -1,0 +1,17 @@
+npx create-next-app@latest --ts --use-npm
+
+Usando aplicacion con las ultimas dependencias de nextjs
+Se usara typescript por eso el --ts y usando npm
+
+La configuracion de typescript esta en: tsconfig.json
+"strict": true,
+"noImplicitAny": true,
+"noImplicitReturns": true,
+Agregar esas variables pues queremos evitar los Any impicitos
+y tampoco los return implicitos
+
+Evitar que sea muy estricto con las reglas de accesibilidad
+Solo para desarrollo no en produccion
+En .eslintrc.json
+"@next/next/no-img-element": "off", 
+"jsx-a11y/alt-text": "off"
