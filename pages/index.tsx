@@ -1,17 +1,52 @@
+import { useState } from "react";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { RandomFox } from "./RandomFox";
 
 const inter = Inter({ subsets: ["latin"] });
 const random = () => Math.floor(Math.random() * 123) + 1;
+/* Indicar el typo para que sea explicito */
+type ImageItem = {id: string, url: string};
+// Iniciar con un array porque son varias.
+// De forma implicita el compilador de codigo entiende que los argumentos de la
+// funcion son strings
+
+// generate simple unique id
+const generateId = (): string => {
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  );
+};
 
 export default function Home() {
+  /* 
+    Para que no se infiera se pone de forma explicita el generico,
+    un array de strings
+    Sa agrega el tipo al hook: <Array<string>>
+  */
+  /* 
+    Normalmente las respuestas de una API,
+    si es un un array es un array de objetos
+  */
+  /* Indicar que es un array de ImageItem, cada uno de estos es un objeto */
+  const [images, setImages] = useState<Array<ImageItem>>([
+    { id: generateId() , url: `https://randomfox.ca/images/${random()}.jpg` },
+    { id: generateId() , url: `https://randomfox.ca/images/${random()}.jpg` },
+    { id: generateId() , url: `https://randomfox.ca/images/${random()}.jpg` },
+    { id: generateId() , url: `https://randomfox.ca/images/${random()}.jpg` },
+  ]);
+
   return (
     <main
       
     >
       <h1 className={"text-3xl font-bold underline"}>WELCOME WORLD</h1>
-      <RandomFox imageUrl={`https://randomfox.ca/images/${random()}.jpg`}/>
+      {images.map(({id, url}) => ( /* object destructuring del imageItem */
+        <div key={id} className="p-4">
+            <RandomFox imageUrl={url}/>
+        </div>
+      ))}
       
       {/* <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
         <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
