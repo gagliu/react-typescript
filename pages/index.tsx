@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { MouseEventHandler } from "react"; /* Importa el tipo de evento */
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { RandomFox } from "./RandomFox";
@@ -30,18 +31,27 @@ export default function Home() {
     si es un un array es un array de objetos
   */
   /* Indicar que es un array de ImageItem, cada uno de estos es un objeto */
-  const [images, setImages] = useState<Array<ImageItem>>([
-    { id: generateId() , url: `https://randomfox.ca/images/${random()}.jpg` },
-    { id: generateId() , url: `https://randomfox.ca/images/${random()}.jpg` },
-    { id: generateId() , url: `https://randomfox.ca/images/${random()}.jpg` },
-    { id: generateId() , url: `https://randomfox.ca/images/${random()}.jpg` },
-  ]);
+  const [images, setImages] = useState<Array<ImageItem>>([]);
+
+  const addNewFox: MouseEventHandler<HTMLButtonElement>  = (event) => {
+
+    const newImageItem: ImageItem = { /* Al poner el tipo esperado va a ayudar a evitar errores */
+      id: generateId(),
+      url: `https://randomfox.ca/images/${random()}.jpg`
+    }
+
+    setImages([
+      ...images,
+      newImageItem
+    ]);
+  }
 
   return (
     <main
       
     >
       <h1 className={"text-3xl font-bold underline"}>WELCOME WORLD</h1>
+      <button onClick={addNewFox} >Add RandomFox</button>
       {images.map(({id, url}) => ( /* object destructuring del imageItem */
         <div key={id} className="p-4">
             <RandomFox imageUrl={url}/>
