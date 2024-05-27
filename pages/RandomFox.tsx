@@ -1,3 +1,5 @@
+import { Console } from "console";
+import {useRef, useEffect, useState} from "react";
 /* Si retornamos un numero no habria problema */
 // export const RandomFox = () => {
 //     // return <img />
@@ -20,11 +22,45 @@ const random = () => Math.floor(Math.random() * 123) + 1;
     return <img width={320} height="auto" src={props.imageUrl} className="rounded"/>;
 } */
 
-type  Props = { imageUrl: string};
+type  Props = { imageUrl: string };
 
-export function RandomFox( {imageUrl}: Props): JSX.Element {
+export const RandomFox = ({imageUrl}: Props): JSX.Element => {
+    /* Debe indicarsele a useRef que elemento vamos a trabajar en el DOM */
+    /* Basta con iniciar useRef en null e indicando el tipo de elemento para evitar errores */
+    const node = useRef<HTMLImageElement>(null);
+    /* Mostrar un cuadro gris mientras la imagen no haya cargado */
+    const [src, setSrc] = useState("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjMyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiLz4=");
+    
+    useEffect(() => {
+       //Nuevo observador
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                //onIntersection -> console.log
+                if(entry.isIntersecting){
+                    console.log(' ---- Hey you! ---- ');
+                    setSrc(imageUrl)
+                }
+            })
+        });
+
+        //Observar nodo
+        if (node.current) { /* si node.current existe */
+            observer.observe(node.current);
+        }
+
+        //desconectar /* siempre que usamos un efecto nos desconectamos */
+        return () => {
+            observer.disconnect()
+        }
+    },[imageUrl]);
+    
+    //Desconectar del componente cuando sea retirado por react o halla un rerender
+
+
     // const image: string = `https://randomfox.ca/images/${random()}.jpg`;
-    return <img width={320} height="auto" src={imageUrl} className="rounded"/>;
+    // return <img ref={node} width={320} height="auto" src={imageUrl} className="rounded"/>;
+    /* Hacer que se ponga una imagen predeterminada, con el estado src */
+    return <img ref={node} width={320} height="auto" src={src} className="rounded"/>;
 }
 
 // export const RandomFox = ({imageUrl}: Props): JSX.Element => {
