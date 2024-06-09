@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { MouseEventHandler } from "react"; /* Importa el tipo de evento */
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import { RandomFox } from "./RandomFox";
+import { LazyImage } from "./LazyImage";
 
 const inter = Inter({ subsets: ["latin"] });
 const random = () => Math.floor(Math.random() * 123) + 1;
@@ -54,7 +54,14 @@ export default function Home() {
       <button onClick={addNewFox} >Add RandomFox</button>
       {images.map(({id, url}) => ( /* object destructuring del imageItem */
         <div key={id} className="p-4">
-            <RandomFox imageUrl={url}/>
+            <LazyImage 
+              src={url} /* es mejor convencion usar src como convencion para la url y no una propiedad con otro nombre para el mismo fin. Asi no tendra que aprender otro nombre el equipo */
+              width={320}
+              height="auto" /* El componente LazyImage solo debe tener ref, src y las propiedades de tipado */
+              className="rounded"
+              title= "Random Fox"
+              onClick={() => console.log(" ---- Hey Click ---- ")}
+            />
         </div>
       ))}
       
