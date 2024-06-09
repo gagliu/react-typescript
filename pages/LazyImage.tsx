@@ -1,5 +1,7 @@
 import { Console } from "console";
 import {useRef, useEffect, useState} from "react";
+import {ImgHTMLAttributes} from "react"; /* Esto permite que la imagen herede todos los tipos que funcionan para esta */
+
 /* Si retornamos un numero no habria problema */
 // export const RandomFox = () => {
 //     // return <img />
@@ -22,14 +24,22 @@ const random = () => Math.floor(Math.random() * 123) + 1;
     return <img width={320} height="auto" src={props.imageUrl} className="rounded"/>;
 } */
 
-type  Props = { imageUrl: string };
+/* Estos seran solo para LazyImage, para el componente */
+type  LazyImageProps = { src: string};
+type ImageNative = ImgHTMLAttributes<HTMLImageElement>;
 
-export const RandomFox = ({imageUrl}: Props): JSX.Element => {
+/* Tipos para todo el componente */
+type Props = LazyImageProps & ImageNative;
+/* 
+    ...imgProps significa: Todo lo demás (o sea los demas props que vienen), 
+    guardalos en imgProps, para no tener que declarar uno por uno
+ */
+export const LazyImage = ({src, ...imgProps }: Props): JSX.Element => {
     /* Debe indicarsele a useRef que elemento vamos a trabajar en el DOM */
     /* Basta con iniciar useRef en null e indicando el tipo de elemento para evitar errores */
     const node = useRef<HTMLImageElement>(null);
     /* Mostrar un cuadro gris mientras la imagen no haya cargado */
-    const [src, setSrc] = useState("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjMyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiLz4=");
+    const [currentSrc, setCurrentSrc] = useState("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjMyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiLz4=");
     
     useEffect(() => {
        //Nuevo observador
@@ -38,7 +48,7 @@ export const RandomFox = ({imageUrl}: Props): JSX.Element => {
                 //onIntersection -> console.log
                 if(entry.isIntersecting){
                     console.log(' ---- Hey you! ---- ');
-                    setSrc(imageUrl)
+                    setCurrentSrc(src) /* Actualizar el estado con el src que llega desde el componente padre */
                 }
             })
         });
@@ -52,7 +62,7 @@ export const RandomFox = ({imageUrl}: Props): JSX.Element => {
         return () => {
             observer.disconnect()
         }
-    },[imageUrl]);
+    },[currentSrc]);
     
     //Desconectar del componente cuando sea retirado por react o halla un rerender
 
@@ -60,7 +70,17 @@ export const RandomFox = ({imageUrl}: Props): JSX.Element => {
     // const image: string = `https://randomfox.ca/images/${random()}.jpg`;
     // return <img ref={node} width={320} height="auto" src={imageUrl} className="rounded"/>;
     /* Hacer que se ponga una imagen predeterminada, con el estado src */
-    return <img ref={node} width={320} height="auto" src={src} className="rounded"/>;
+    /* Al inspeccionar */
+    /* Si se va a la definición para saber que tipo es admitido en el img element */
+    return ( 
+        <img 
+            ref={node}
+            src={src} /* El componente LazyImage solo debe tener ref, src y las propiedades de tipado */
+            {...imgProps} /* Con esto se indica que se incluyen los props adecauados para la imagen. 
+                En imgProps estan todos los tipos */
+             />
+        );
+        
 }
 
 // export const RandomFox = ({imageUrl}: Props): JSX.Element => {
