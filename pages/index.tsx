@@ -52,7 +52,7 @@ export default function Home() {
     >
       <h1 className={"text-3xl font-bold underline"}>WELCOME WORLD</h1>
       <button onClick={addNewFox} >Add RandomFox</button>
-      {images.map(({id, url}) => ( /* object destructuring del imageItem */
+      {images.map(({id, url, index}) => ( /* object destructuring del imageItem */
         <div key={id} className="p-4">
             <LazyImage 
               src={url} /* es mejor convencion usar src como convencion para la url y no una propiedad con otro nombre para el mismo fin. Asi no tendra que aprender otro nombre el equipo */
@@ -61,6 +61,9 @@ export default function Home() {
               className="rounded"
               title= "Random Fox"
               onClick={() => console.log(" ---- Hey Click ---- ")}
+              onLazyLoad={(img) => {
+                console.log(`Image #${index + 1} cargada. Nodo:`, img);
+              }}
             />
         </div>
       ))}

@@ -25,7 +25,12 @@ const random = () => Math.floor(Math.random() * 123) + 1;
 } */
 
 /* Estos seran solo para LazyImage, para el componente */
-type  LazyImageProps = { src: string};
+type  LazyImageProps = { 
+    src: string;
+    // Reto
+    onLazyLoad?: (img: HTMLImageElement) => void; //Propiedad opcional, es una imagen
+};
+
 type ImageNative = ImgHTMLAttributes<HTMLImageElement>;
 
 /* Tipos para todo el componente */
@@ -34,7 +39,11 @@ type Props = LazyImageProps & ImageNative;
     ...imgProps significa: Todo lo demás (o sea los demas props que vienen), 
     guardalos en imgProps, para no tener que declarar uno por uno
  */
-export const LazyImage = ({src, ...imgProps }: Props): JSX.Element => {
+export const LazyImage = ({
+        src, 
+        onLazyLoad, 
+        ...imgProps
+    }: Props): JSX.Element => {
     /* Debe indicarsele a useRef que elemento vamos a trabajar en el DOM */
     /* Basta con iniciar useRef en null e indicando el tipo de elemento para evitar errores */
     const node = useRef<HTMLImageElement>(null);
@@ -49,6 +58,10 @@ export const LazyImage = ({src, ...imgProps }: Props): JSX.Element => {
                 if(entry.isIntersecting){
                     console.log(' ---- Hey you! ---- ');
                     setCurrentSrc(src) /* Actualizar el estado con el src que llega desde el componente padre */
+
+                    if (typeof onLazyLoad === "function") {
+                        onLazyLoad(node.current);
+                    }
                 }
             })
         });
@@ -62,7 +75,7 @@ export const LazyImage = ({src, ...imgProps }: Props): JSX.Element => {
         return () => {
             observer.disconnect()
         }
-    },[currentSrc]);
+    },[currentSrc, onLazyLoad]);
     
     //Desconectar del componente cuando sea retirado por react o halla un rerender
 
