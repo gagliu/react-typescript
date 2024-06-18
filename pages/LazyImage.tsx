@@ -47,10 +47,14 @@ export const LazyImage = ({
     /* Debe indicarsele a useRef que elemento vamos a trabajar en el DOM */
     /* Basta con iniciar useRef en null e indicando el tipo de elemento para evitar errores */
     const node = useRef<HTMLImageElement>(null);
+    const [isLazyLoaded, setIsLazyLoaded] = useState(false);
     /* Mostrar un cuadro gris mientras la imagen no haya cargado */
     const [currentSrc, setCurrentSrc] = useState("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjMyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiLz4=");
     
     useEffect(() => {
+        if (isLazyLoaded) {
+            return;
+        }
        //Nuevo observador
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -58,6 +62,9 @@ export const LazyImage = ({
                 if(entry.isIntersecting){
                     console.log(' ---- Hey you! ---- ');
                     setCurrentSrc(src) /* Actualizar el estado con el src que llega desde el componente padre */
+
+                    observer.disconnect();
+                    setIsLazyLoaded(true);
 
                     if (typeof onLazyLoad === "function") {
                         onLazyLoad(node.current);
@@ -75,7 +82,7 @@ export const LazyImage = ({
         return () => {
             observer.disconnect()
         }
-    },[currentSrc, onLazyLoad]);
+    },[currentSrc, onLazyLoad, isLazyLoaded]);
     
     //Desconectar del componente cuando sea retirado por react o halla un rerender
 
